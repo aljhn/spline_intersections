@@ -100,7 +100,7 @@ def plot1_1():
         dpi=300,
         bbox_inches="tight"
     )
-    # plt.show()
+    print("Finished: plots/plot_1_1.png")
 
 
 def plot1_2():
@@ -188,7 +188,7 @@ def plot1_2():
         dpi=300,
         bbox_inches="tight"
     )
-    # plt.show()
+    print("Finished: plots/plot_1_2.png")
 
 def plot2_1():
     setup_style()
@@ -213,7 +213,7 @@ def plot2_1():
         dpi=300,
         bbox_inches="tight"
     )
-    # plt.show()
+    print("Finished: plots/plot_2_1.png")
 
 def plot2_2():
     fig, ax = setup_figure()
@@ -252,6 +252,7 @@ def plot2_2():
         dpi=300,
         bbox_inches="tight"
     )
+    print("Finished: plots/plot_2_2.png")
 
 def plot2_3():
     fig, ax = setup_figure()
@@ -339,10 +340,10 @@ def plot2_3():
         dpi=300,
         bbox_inches="tight"
     )
+    print("Finished: plots/plot_2_3.png")
 
 
 def main():
-
     if not os.path.exists("plots"):
         os.mkdir("plots")
 
@@ -356,7 +357,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# fix the zoom out bug on the slug page
-# fix hyprland resize
