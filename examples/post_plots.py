@@ -1,8 +1,9 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from splineintersections.splines import get_spline, spline_eval
+from spline_intersections.splines import get_spline, spline_eval
 
 
 def setup_style():
@@ -341,6 +342,10 @@ def plot2_3():
 
 
 def main():
+
+    if not os.path.exists("plots"):
+        os.mkdir("plots")
+
     plot1_1()
     plot1_2()
 
