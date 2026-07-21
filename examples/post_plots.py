@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from spline_intersections.splines import get_spline, spline_eval
+from spline_intersections import get_spline, spline_eval
 
 
 def setup_style():

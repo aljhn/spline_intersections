@@ -2,29 +2,30 @@ import numpy as np
 import numpy.typing as npt
 
 
-def derivative(coeffs: npt.NDArray) -> npt.NDArray:
-    n = coeffs.shape[0] - 1
-    if n == 0:
-        return np.array([0.0])
-    return coeffs[:-1] * np.arange(n, 0, -1)
+def derivative(coeffs: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    degree = coeffs.shape[0] - 1
+
+    if degree == 0:
+        return np.zeros_like(coeffs)
+
+    powers = np.arange(degree, 0, -1)
+    return coeffs[..., :-1] * powers
 
 
 def get_spline(
-    t0: float,
-    p0: npt.NDArray,
-    v0: npt.NDArray,
-    t1: float,
-    p1: npt.NDArray,
-    v1: npt.NDArray,
-) -> npt.NDArray:
-    n = p0.shape[0]
-    coeffs = np.zeros((n, 4))
-
+    t0: np.float64,
+    p0: npt.NDArray[np.float64],
+    v0: npt.NDArray[np.float64],
+    t1: np.float64,
+    p1: npt.NDArray[np.float64],
+    v1: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
     t0_2 = t0 * t0
     t0_3 = t0_2 * t0
 
     t1_2 = t1 * t1
     t1_3 = t1_2 * t1
+
     M = np.array(
         [
             [t0_3, t0_2, t0, 1.0],
@@ -34,15 +35,15 @@ def get_spline(
         ]
     )
 
-    for i in range(n):
-        b = np.array([p0[i], p1[i], v0[i], v1[i]])
-        c, _, _, _ = np.linalg.lstsq(M, b)
-        coeffs[i, :] = c
+    B = np.stack([p0, p1, v0, v1], axis=0)
+    coeffs = np.linalg.solve(M, B).T
 
     return coeffs
 
 
-def spline_eval(coeffs: npt.NDArray, t: npt.NDArray) -> npt.NDArray:
+def spline_eval(
+    coeffs: npt.NDArray[np.float64], t: npt.NDArray[np.float64]
+) -> npt.NDArray[np.float64]:
     n = coeffs.shape[0]
     x = np.zeros((n, t.shape[0]))
     for i in range(n):
