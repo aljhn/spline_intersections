@@ -3,35 +3,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from spline_intersections import get_spline, spline_eval
+from spline_intersections import get_spline, spline_eval, derivative
 
 
 def setup_style():
-    sns.set_theme(
-        style="darkgrid", 
-        context="notebook",
-        font_scale=1.2)
+    sns.set_theme(style="darkgrid", context="notebook", font_scale=1.2)
     sns.set_palette("deep")
 
-    plt.rcParams.update({
-        "font.family": "serif",
-        "font.serif": ["STIX Two Text"],
-        "mathtext.fontset": "stix",
+    plt.rcParams.update(
+        {
+            "font.family": "serif",
+            "font.serif": ["STIX Two Text"],
+            "mathtext.fontset": "stix",
+            "font.size": 16,
+            "axes.titlesize": 18,
+            "axes.labelsize": 16,
+            "xtick.labelsize": 12,
+            "ytick.labelsize": 12,
+            "legend.fontsize": 14,
+            "axes.linewidth": 1.2,
+            "grid.linewidth": 0.8,
+            "figure.dpi": 300,
+            "savefig.dpi": 300,
+            "savefig.bbox": "tight",
+        }
+    )
 
-        "font.size": 16,
-        "axes.titlesize": 18,
-        "axes.labelsize": 16,
-        "xtick.labelsize": 12,
-        "ytick.labelsize": 12,
-        "legend.fontsize": 14,
-
-        "axes.linewidth": 1.2,
-        "grid.linewidth": 0.8,
-
-        "figure.dpi": 300,
-        "savefig.dpi": 300,
-        "savefig.bbox": "tight",
-    })
 
 def setup_figure():
     setup_style()
@@ -59,22 +56,8 @@ def plot1_1():
 
     fig, ax = setup_figure()
 
-    ax.plot(
-        t_dense,
-        p_dense,
-        color="C0",
-        linewidth=2,
-        zorder=1
-    )
-    ax.scatter(
-        t,
-        p,
-        s=150,
-        color="C0",
-        edgecolor="white",
-        linewidth=1.5,
-        zorder=3
-    )
+    ax.plot(t_dense, p_dense, color="C0", linewidth=2, zorder=1)
+    ax.scatter(t, p, s=150, color="C0", edgecolor="white", linewidth=1.5, zorder=3)
     ax.quiver(
         t,
         p,
@@ -88,18 +71,14 @@ def plot1_1():
         headlength=4.0,
         headaxislength=4.0,
         color="black",
-        zorder=2
+        zorder=2,
     )
     ax.set_xlabel(r"$t$")
     ax.set_ylabel(r"$f(t)$")
     ax.margins(x=0.05, y=0.05)
     sns.despine(ax=ax)
 
-    fig.savefig(
-        "plots/plot_1_1.png",
-        dpi=300,
-        bbox_inches="tight"
-    )
+    fig.savefig("plots/plot_1_1.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_1_1.png")
 
 
@@ -143,7 +122,7 @@ def plot1_2():
         color="black",
         edgecolor="white",
         linewidth=1.5,
-        zorder=2
+        zorder=2,
     )
     ax.plot(x0[0, :], x0[1, :], linewidth=3)
     ax.plot(x1[0, :], x1[1, :], linewidth=3)
@@ -172,7 +151,7 @@ def plot1_2():
             headwidth=4.0,
             headlength=4.0,
             headaxislength=4.0,
-            zorder=3
+            zorder=3,
         )
 
     ax.set_xlabel(r"$x_1$")
@@ -183,17 +162,16 @@ def plot1_2():
     ax.set_aspect("equal")
     sns.despine(ax=ax)
 
-    fig.savefig(
-        "plots/plot_1_2.png",
-        dpi=300,
-        bbox_inches="tight"
-    )
+    fig.savefig("plots/plot_1_2.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_1_2.png")
+
 
 def plot2_1():
     setup_style()
 
-    fig, ax = plt.subplots(figsize=(8, 5), constrained_layout=True, subplot_kw={"projection": "3d"})
+    fig, ax = plt.subplots(
+        figsize=(8, 5), constrained_layout=True, subplot_kw={"projection": "3d"}
+    )
 
     t = np.linspace(0.0, 5.0, 100)
     ax.plot(t - t * t + 10.0, t - t * t / 10.0, 1.0 + t / 20.0, color="C0", linewidth=3)
@@ -208,12 +186,9 @@ def plot2_1():
 
     ax.margins(0.05)
     sns.despine(ax=ax)
-    fig.savefig(
-        "plots/plot_2_1.png",
-        dpi=300,
-        bbox_inches="tight"
-    )
+    fig.savefig("plots/plot_2_1.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_1.png")
+
 
 def plot2_2():
     fig, ax = setup_figure()
@@ -237,7 +212,7 @@ def plot2_2():
         color="C0",
         edgecolor="white",
         linewidth=1.5,
-        zorder=3
+        zorder=3,
     )
 
     ax.set_xlabel(r"$t$")
@@ -247,12 +222,9 @@ def plot2_2():
     ax.margins(x=0.05, y=0.05)
     sns.despine(ax=ax)
 
-    fig.savefig(
-        "plots/plot_2_2.png",
-        dpi=300,
-        bbox_inches="tight"
-    )
+    fig.savefig("plots/plot_2_2.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_2.png")
+
 
 def plot2_3():
     fig, ax = setup_figure()
@@ -269,12 +241,42 @@ def plot2_3():
         f = spline_eval(spline, t)
         ax.plot(f[0, :], f[1, :], color=color, linewidth=3)
 
-    draw_spline(np.array([t0[0], h0]), np.array([5.0, 2.0]), np.array([t0[1], h0]), np.array([1.0, 1.0]), "C0")
-    draw_spline(np.array([t0[1], h0]), np.array([1.0, 1.0]), np.array([t0[2], h0]), np.array([0.0, -2.0]), "C0")
-    draw_spline(np.array([t0[2], h0]), np.array([0.0, -2.0]), np.array([t0[3], h0]), np.array([0.0, -5.0]), "C0")
+    draw_spline(
+        np.array([t0[0], h0]),
+        np.array([5.0, 2.0]),
+        np.array([t0[1], h0]),
+        np.array([1.0, 1.0]),
+        "C0",
+    )
+    draw_spline(
+        np.array([t0[1], h0]),
+        np.array([1.0, 1.0]),
+        np.array([t0[2], h0]),
+        np.array([0.0, -2.0]),
+        "C0",
+    )
+    draw_spline(
+        np.array([t0[2], h0]),
+        np.array([0.0, -2.0]),
+        np.array([t0[3], h0]),
+        np.array([0.0, -5.0]),
+        "C0",
+    )
 
-    draw_spline(np.array([t1[0], h1]), np.array([2.0, 4.0]), np.array([t1[1], h1]), np.array([1.0, 2.0]), "C1")
-    draw_spline(np.array([t1[1], h1]), np.array([1.0, 2.0]), np.array([t1[2], h1]), np.array([0.5, -1.0]), "C1")
+    draw_spline(
+        np.array([t1[0], h1]),
+        np.array([2.0, 4.0]),
+        np.array([t1[1], h1]),
+        np.array([1.0, 2.0]),
+        "C1",
+    )
+    draw_spline(
+        np.array([t1[1], h1]),
+        np.array([1.0, 2.0]),
+        np.array([t1[2], h1]),
+        np.array([0.5, -1.0]),
+        "C1",
+    )
 
     ax.scatter(
         t0,
@@ -283,7 +285,7 @@ def plot2_3():
         color="C0",
         edgecolor="white",
         linewidth=1.5,
-        zorder=3
+        zorder=3,
     )
 
     ax.scatter(
@@ -293,7 +295,7 @@ def plot2_3():
         color="C1",
         edgecolor="white",
         linewidth=1.5,
-        zorder=3
+        zorder=3,
     )
 
     ax.plot((t0[0], t0[0]), (h0 + 0.5, h0 - 0.5), color="black", linewidth=2)
@@ -305,14 +307,56 @@ def plot2_3():
     ax.plot((t1[1], t1[1]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2)
     ax.plot((t1[2], t1[2]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2)
 
-    ax.plot((t0[0], t0[0]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2, linestyle="dashed")
-    ax.plot((t0[1], t0[1]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2, linestyle="dashed")
-    ax.plot((t0[2], t0[2]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2, linestyle="dashed")
-    ax.plot((t0[3], t0[3]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2, linestyle="dashed")
+    ax.plot(
+        (t0[0], t0[0]),
+        (h1 + 0.5, h1 - 0.5),
+        color="black",
+        linewidth=2,
+        linestyle="dashed",
+    )
+    ax.plot(
+        (t0[1], t0[1]),
+        (h1 + 0.5, h1 - 0.5),
+        color="black",
+        linewidth=2,
+        linestyle="dashed",
+    )
+    ax.plot(
+        (t0[2], t0[2]),
+        (h1 + 0.5, h1 - 0.5),
+        color="black",
+        linewidth=2,
+        linestyle="dashed",
+    )
+    ax.plot(
+        (t0[3], t0[3]),
+        (h1 + 0.5, h1 - 0.5),
+        color="black",
+        linewidth=2,
+        linestyle="dashed",
+    )
 
-    ax.plot((t1[0], t1[0]), (h0 + 0.5, h0 - 0.5), color="black", linewidth=2, linestyle="dashed")
-    ax.plot((t1[1], t1[1]), (h0 + 0.5, h0 - 0.5), color="black", linewidth=2, linestyle="dashed")
-    ax.plot((t1[2], t1[2]), (h0 + 0.5, h0 - 0.5), color="black", linewidth=2, linestyle="dashed")
+    ax.plot(
+        (t1[0], t1[0]),
+        (h0 + 0.5, h0 - 0.5),
+        color="black",
+        linewidth=2,
+        linestyle="dashed",
+    )
+    ax.plot(
+        (t1[1], t1[1]),
+        (h0 + 0.5, h0 - 0.5),
+        color="black",
+        linewidth=2,
+        linestyle="dashed",
+    )
+    ax.plot(
+        (t1[2], t1[2]),
+        (h0 + 0.5, h0 - 0.5),
+        color="black",
+        linewidth=2,
+        linestyle="dashed",
+    )
 
     ts = (t0[0], t1[0], t0[1], t1[1], t0[2], t1[2], t0[3])
     for i in range(len(ts) - 1):
@@ -335,11 +379,7 @@ def plot2_3():
     ax.margins(x=0.05, y=0.05)
     sns.despine(ax=ax)
 
-    fig.savefig(
-        "plots/plot_2_3.png",
-        dpi=300,
-        bbox_inches="tight"
-    )
+    fig.savefig("plots/plot_2_3.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_3.png")
 
 
