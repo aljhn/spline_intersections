@@ -2,16 +2,6 @@ import numpy as np
 import numpy.typing as npt
 
 
-def derivative(coeffs: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-    degree = coeffs.shape[1] - 1
-
-    if degree == 0:
-        return np.zeros_like(coeffs)
-
-    powers = np.arange(degree, 0, -1)
-    return coeffs[:, :-1] * powers
-
-
 def get_spline(
     t0: float,
     p0: npt.NDArray[np.float64],
@@ -40,12 +30,3 @@ def get_spline(
 
     return coeffs
 
-
-def spline_eval(
-    coeffs: npt.NDArray[np.float64], t: npt.NDArray[np.float64]
-) -> npt.NDArray[np.float64]:
-    t = np.asarray(t).reshape(-1)
-    output = coeffs[:, 0, None]
-    for i in range(1, coeffs.shape[1]):
-        output = output * t + coeffs[:, i, None]
-    return output
