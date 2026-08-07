@@ -114,7 +114,7 @@ def poly_real_roots(coeffs: PolyCoeffs) -> list[float]:
 
         elif not np.isclose(b, 0.0) and np.isclose(c, 0.0):
             r = -b / a
-            return [0.0, r]
+            return sorted([0.0, r])
 
         D = b * b - 4.0 * a * c
         if D < 0.0:
@@ -131,7 +131,7 @@ def poly_real_roots(coeffs: PolyCoeffs) -> list[float]:
                 return [r1]
 
             r2 = c / q
-            return [r1, r2]
+            return sorted([r1, r2])
 
     else:
         roots = []
