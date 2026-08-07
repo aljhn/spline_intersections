@@ -1,3 +1,4 @@
-from .splines import derivative, get_spline, spline_eval
+from .polynomial import poly_derivative, poly_eval, poly_real_roots
+from .splines import get_spline
 
-__all__ = ["derivative", "get_spline", "spline_eval"]
+__all__ = ["poly_derivative", "poly_eval", "poly_real_roots", "get_spline"]
