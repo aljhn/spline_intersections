@@ -1,15 +1,19 @@
 import numpy as np
-import numpy.typing as npt
+
+from .polynomial import poly_eval
 
 
-def get_spline(
+type SplineCoeffs = np.ndarray[tuple[int, int], np.dtype[np.float64]]
+
+
+def spline_get(
     t0: float,
-    p0: npt.NDArray[np.float64],
-    v0: npt.NDArray[np.float64],
+    p0: np.ndarray[tuple[int], np.dtype[np.float64]],
+    v0: np.ndarray[tuple[int], np.dtype[np.float64]],
     t1: float,
-    p1: npt.NDArray[np.float64],
-    v1: npt.NDArray[np.float64],
-) -> npt.NDArray[np.float64]:
+    p1: np.ndarray[tuple[int], np.dtype[np.float64]],
+    v1: np.ndarray[tuple[int], np.dtype[np.float64]],
+) -> SplineCoeffs:
     t0_2 = t0 * t0
     t0_3 = t0_2 * t0
 
@@ -29,4 +33,3 @@ def get_spline(
     coeffs = np.linalg.solve(M, B).T
 
     return coeffs
-

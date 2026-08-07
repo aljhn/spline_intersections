@@ -1,49 +1,27 @@
 import numpy as np
 
 
-# # First dimension = which polynomial it is
-# # Second dimension = which coefficient of that it is
-# type PolyCoeffs = np.ndarray[tuple[int, int], np.dtype[np.float64]]
-#
-#
-# def poly_derivative(coeffs: PolyCoeffs) -> PolyCoeffs:
-#     degree = coeffs.shape[1] - 1
-#
-#     if degree <= 0:
-#         return np.zeros_like(coeffs)
-#
-#     powers = np.arange(degree, 0, -1)
-#     return coeffs[:, :-1] * powers
-#
-#
-# def poly_eval(
-#     coeffs: PolyCoeffs, t: npt.NDArray[np.float64]
-# ) -> npt.NDArray[np.float64]:
-#     t = np.asarray(t).reshape(-1)
-#     output = coeffs[:, 0, None]
-#     for i in range(1, coeffs.shape[1]):
-#         output = output * t + coeffs[:, i, None]
-#     return output
-
-
-type PolyCoeffs = np.ndarray[tuple[int], np.dtype[np.float64]]
-
-
-def poly_derivative(coeffs: PolyCoeffs) -> PolyCoeffs:
-    degree = coeffs.shape[0] - 1
+def poly_derivative(coeffs: np.ndarray) -> np.ndarray:
+    degree = coeffs.shape[-1] - 1
 
     if degree <= 0:
         return np.zeros_like(coeffs)
 
     powers = np.arange(degree, 0, -1)
-    return coeffs[:-1] * powers
+    return coeffs[..., :-1] * powers
 
 
-def poly_eval(coeffs: PolyCoeffs, t: float) -> float:
-    output = coeffs[0]
-    for i in range(1, coeffs.shape[0]):
-        output = output * t + coeffs[i]
-    return output
+
+def poly_eval(coeffs: np.ndarray, t: np.ndarray | float) -> np.ndarray:
+    t = np.asarray(t)
+
+    output = coeffs[..., 0, None]
+    for i in range(1, coeffs.shape[-1]):
+        output = output * t + coeffs[..., i, None]
+    return output.squeeze()
+
+
+type PolyCoeffs = np.ndarray[tuple[int], np.dtype[np.float64]]
 
 
 def poly_cauchy_bound(coeffs: PolyCoeffs) -> float:
