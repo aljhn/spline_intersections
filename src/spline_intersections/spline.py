@@ -1,7 +1,5 @@
 import numpy as np
 
-from .polynomial import poly_eval
-
 
 type SplineCoeffs = np.ndarray[tuple[int, int], np.dtype[np.float64]]
 

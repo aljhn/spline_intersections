@@ -29,32 +29,51 @@ def poly_cauchy_bound(coeffs: PolyCoeffs) -> float:
     if degree <= 1:
         return 0.0
 
-    if np.abs(coeffs[0]) == 0.0:
+    if np.isclose(coeffs[0], 0.0):
         return 0.0
 
     alpha = 1.0 + np.max(np.abs(coeffs[1:] / coeffs[0]))
     return alpha
 
 
-def poly_newton(
+def poly_newton_bisect(
     coeffs: PolyCoeffs,
     d_coeffs: PolyCoeffs,
     t0: float,
+    t1: float,
     max_iterations: int = 10000,
 ) -> float:
-    t = t0
+    f0 = poly_eval(coeffs, t0)
+    # f1 = poly_eval(coeffs, t1)
+
+    t = 0.5 * (t0 + t1)
     for _ in range(max_iterations):
         f = poly_eval(coeffs, t)
         if np.isclose(f, 0.0):
             break
 
         df = poly_eval(d_coeffs, t)
-        if np.isclose(df, 0.0):
-            break
+        use_newton = not np.isclose(df, 0.0)
+        if use_newton:
+            t_next = t - f / df
 
-        t_next = t - f / df
-        if np.isclose(t_next, t):
-            t = t_next
+            if t_next <= t0 or t_next >= t1:
+                use_newton = False
+
+        if not use_newton:
+            t_next = 0.5 * (t0 + t1)
+
+        f_next = poly_eval(coeffs, t_next)
+
+        if np.sign(f0) != np.sign(f_next):
+            t1 = t_next 
+            # f1 = f_next
+        else:
+            t0 = t_next
+            f0 = f_next
+
+        if np.isclose(t0 - t1, 0.0):
+            t = 0.5 * (t0 + t1)
             break
 
         t = t_next
@@ -109,7 +128,7 @@ def poly_real_roots(coeffs: PolyCoeffs) -> list[float]:
                 return [r1]
 
             r2 = c / q
-            return sorted([r1, r2])
+            return sorted([r2, r1])
 
     else:
         roots = []
@@ -133,7 +152,7 @@ def poly_real_roots(coeffs: PolyCoeffs) -> list[float]:
             f1 = poly_eval(coeffs, r1)
 
             if (f0 > 0 and f1 < 0) or (f0 < 0 and f1 > 0):
-                r = poly_newton(coeffs, d_coeffs, 0.5 * (r0 + r1))
+                r = poly_newton_bisect(coeffs, d_coeffs, r0, r1)
                 roots.append(r)
 
         roots.sort()
