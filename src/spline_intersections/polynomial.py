@@ -11,13 +11,17 @@ def poly_derivative(coeffs: np.ndarray) -> np.ndarray:
     return coeffs[..., :-1] * powers
 
 
-def poly_eval(coeffs: np.ndarray, t: np.ndarray | float) -> np.ndarray:
+def poly_eval(coeffs: np.ndarray, t: np.ndarray | float) -> np.ndarray | float:
+    is_float = isinstance(t, float)
     t = np.asarray(t)
 
     output = coeffs[..., 0, None]
     for i in range(1, coeffs.shape[-1]):
         output = output * t + coeffs[..., i, None]
-    return output.squeeze()
+
+    if is_float:
+        output = float(output.squeeze())
+    return output
 
 
 type PolyCoeffs = np.ndarray[tuple[int], np.dtype[np.float64]]
@@ -162,3 +166,53 @@ def poly_real_roots(coeffs: PolyCoeffs) -> list[float]:
                 unique.append(r)
 
         return unique
+
+
+class Polynomial:
+    def __init__(self, coeffs: np.ndarray):
+        self.coeffs = coeffs
+
+        while self.coeffs.shape[0] > 0 and np.isclose(self.coeffs[0], 0.0):
+            self.coeffs = self.coeffs[1:]
+
+        self.degree = np.max(self.coeffs.shape[0] - 1, 0)
+
+    def eval(self, t: np.ndarray | float) -> np.ndarray | float:
+        return poly_eval(self.coeffs, t)
+
+    def derivative(self) -> Polynomial:
+        return Polynomial(poly_derivative(self.coeffs))
+
+    def get_real_roots(self) -> list[float]:
+        return poly_real_roots(self.coeffs)
+
+    def __call__(self, t: np.ndarray | float) -> np.ndarray | float:
+        return self.eval(t)
+
+    def __add__(self, other: Polynomial) -> Polynomial:
+        coeffs_self = self.coeffs
+        coeffs_other = other.coeffs
+
+        if self.degree > other.degree:
+            coeffs_other = np.concatenate([np.zeros((self.degree - other.degree,)), coeffs_other], axis=0)
+        elif self.degree < other.degree:
+            coeffs_self = np.concatenate([np.zeros((other.degree - self.degree,)), coeffs_self], axis=0)
+
+        coeffs_added = coeffs_self + coeffs_other
+        return Polynomial(coeffs_added)
+
+    def __neg__(self) -> Polynomial:
+        return Polynomial(-self.coeffs)
+
+    def __sub__(self, other: Polynomial) -> Polynomial:
+        return self + (-other)
+
+    def __mul__(self, other: Polynomial) -> Polynomial:
+        # degree_multiplied = self.degree + other.degree
+        # coeffs_multiplied = np.zeros((degree_multiplied,))
+        # for i in range(self.degree):
+        #     for j in range(other.degree):
+        #         pass
+
+        coeffs_multiplied = np.convolve(self.coeffs, other.coeffs) # TODO ?
+        return Polynomial(coeffs_multiplied)

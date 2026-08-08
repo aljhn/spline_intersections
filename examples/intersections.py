@@ -1,6 +1,6 @@
 import numpy as np
 
-from spline_intersections import State, Trajectory
+from spline_intersections import State, Trajectory, poly_eval
 
 
 def trajectory1_symbolic(t: float) -> tuple[np.ndarray, np.ndarray]:

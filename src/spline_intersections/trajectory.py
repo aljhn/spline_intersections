@@ -51,22 +51,22 @@ class Trajectory:
             segment = Segment(t0, coeffs)
             self.segments.append(segment)
 
-    def eval(self, t: float) -> np.ndarray:
+    def eval(self, t: float) -> float:
         if len(self.segments) == 0:
-            return np.zeros(())
+            return 0.0
 
         elif len(self.segments) == 1:
-            return poly_eval(self.segments[0].coeffs, t)
+            return float(poly_eval(self.segments[0].coeffs, t))
 
         else:
             if t < self.segments[1].t:
-                return poly_eval(self.segments[0].coeffs, t)
+                return float(poly_eval(self.segments[0].coeffs, t))
 
             i = 1
             while i < len(self.segments) - 1 and t < self.segments[i + 1].t:
                 i += 1
 
-            return poly_eval(self.segments[i].coeffs, t)
+            return float(poly_eval(self.segments[i].coeffs, t))
 
     def intersect(self, other: Trajectory) -> list[float]:
         t_all_self = []
