@@ -4,7 +4,17 @@ import numpy as np
 type SplineCoeffs = np.ndarray[tuple[int, int], np.dtype[np.float64]]
 
 
-def spline_get(
+def spline_get_linear(
+    t: float,
+    p: np.ndarray[tuple[int], np.dtype[np.float64]],
+    v: np.ndarray[tuple[int], np.dtype[np.float64]],
+) -> SplineCoeffs:
+    a = v
+    b = p - v * t
+    return np.stack([a, b], axis=1)
+
+
+def spline_get_cubic(
     t0: float,
     p0: np.ndarray[tuple[int], np.dtype[np.float64]],
     v0: np.ndarray[tuple[int], np.dtype[np.float64]],

@@ -11,7 +11,6 @@ def poly_derivative(coeffs: np.ndarray) -> np.ndarray:
     return coeffs[..., :-1] * powers
 
 
-
 def poly_eval(coeffs: np.ndarray, t: np.ndarray | float) -> np.ndarray:
     t = np.asarray(t)
 
@@ -66,7 +65,7 @@ def poly_newton_bisect(
         f_next = poly_eval(coeffs, t_next)
 
         if np.sign(f0) != np.sign(f_next):
-            t1 = t_next 
+            t1 = t_next
             # f1 = f_next
         else:
             t0 = t_next
