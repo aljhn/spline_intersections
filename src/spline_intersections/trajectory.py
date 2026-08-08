@@ -18,7 +18,6 @@ class Segment:
     coeffs: np.ndarray
 
 
-@dataclass
 class Trajectory:
     def __init__(self):
         self.states: list[State] = []
@@ -68,3 +67,36 @@ class Trajectory:
                 i += 1
 
             return poly_eval(self.segments[i].coeffs, t)
+
+    def intersect(self, other: Trajectory) -> list[float]:
+        t_all_self = []
+        for state in self.states:
+            t_all_self.append(state.t)
+
+        t_all_other = []
+        for state in other.states:
+            t_all_other.append(state.t)
+
+        t_union = t_all_self + t_all_other
+        t_union.sort()
+
+        t_all = []
+        for t in t_union:
+            if len(t_all) == 0 or not np.isclose(t, t_all[-1]):
+                t_all.append(t)
+
+        t_intersections = []
+
+        for i in range(len(t_all) - 1):
+            t0 = t_all[i + 0]
+            t1 = t_all[i + 1]
+
+            #find spline segments from each trajectoru in the interval
+
+            # get the spline segment / polynomial difference
+
+            # find the minimum value of the norm of the difference
+
+            # if the minimum value is close to zero, append the time to the list
+
+        return t_intersections
