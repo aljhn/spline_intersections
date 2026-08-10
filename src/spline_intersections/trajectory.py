@@ -1,3 +1,5 @@
+from bisect import bisect_right
+
 import numpy as np
 from dataclasses import dataclass
 
@@ -71,6 +73,19 @@ class Trajectory:
     def __call__(self, t: float) -> float | np.ndarray:
         return self.eval(t)
 
+    def find_segment_index(self, t: float) -> int:
+        low = 0
+        high = len(self.segments)
+
+        while low < high:
+            mid = (low + high) // 2
+            if self.segments[mid].t <= t:
+                low = mid + 1
+            else:
+                high = mid
+
+        return max(low - 1, 0)
+
     def intersect(self, other: Trajectory, threshold: float) -> list[float]:
         if len(self.segments) == 0 or len(other.segments) == 0:
             return []
@@ -99,22 +114,11 @@ class Trajectory:
             t0 = t_all[i + 0]
             t1 = t_all[i + 1]
 
-            coeffs0 = None
-            for j in range(len(self.segments) - 1):
-                if t0 < self.segments[j + 1].t:
-                    coeffs0 = self.segments[j].coeffs
-                    break
-            if coeffs0 is None:
-                coeffs0 = self.segments[-1].coeffs
+            coeffs0_index = self.find_segment_index(t0)
+            coeffs0 = self.segments[coeffs0_index].coeffs
  
-            coeffs1 = None
-            for j in range(len(other.segments) - 1):
-                if t0 < other.segments[j + 1].t:
-                    coeffs1 = other.segments[j].coeffs
-                    break
-            if coeffs1 is None:
-                coeffs1 = other.segments[-1].coeffs
-
+            coeffs1_index = other.find_segment_index(t1)
+            coeffs1 = other.segments[coeffs1_index].coeffs
 
             coeffs_diff = coeffs0 - coeffs1
             poly_x = Polynomial(coeffs_diff[0, :])
