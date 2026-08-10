@@ -1,28 +1,27 @@
 import os
+
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 from spline_intersections import spline_get_cubic, poly_eval
 
 
 def setup_style():
-    sns.set_theme(style="darkgrid", context="notebook", font_scale=1.2)
-    sns.set_palette("deep")
-
     plt.rcParams.update(
         {
             "font.family": "serif",
             "font.serif": ["STIX Two Text"],
             "mathtext.fontset": "stix",
             "font.size": 16,
+            "axes.grid": True,
+            "grid.color": "0.8",
+            "grid.linewidth": 0.8,
             "axes.titlesize": 18,
             "axes.labelsize": 16,
+            "axes.linewidth": 1.2,
             "xtick.labelsize": 12,
             "ytick.labelsize": 12,
             "legend.fontsize": 14,
-            "axes.linewidth": 1.2,
-            "grid.linewidth": 0.8,
             "figure.dpi": 300,
             "savefig.dpi": 300,
             "savefig.bbox": "tight",
@@ -76,7 +75,8 @@ def plot1_1():
     ax.set_xlabel(r"$t$")
     ax.set_ylabel(r"$f(t)$")
     ax.margins(x=0.05, y=0.05)
-    sns.despine(ax=ax)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
 
     fig.savefig("plots/plot_1_1.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_1_1.png")
@@ -160,7 +160,8 @@ def plot1_2():
     ax.set_ylim([-4, 6])
     ax.margins(x=0.05, y=0.05)
     ax.set_aspect("equal")
-    sns.despine(ax=ax)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
 
     fig.savefig("plots/plot_1_2.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_1_2.png")
@@ -185,7 +186,8 @@ def plot2_1():
     ax.view_init(elev=30, azim=-60)
 
     ax.margins(0.05)
-    sns.despine(ax=ax)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
     fig.savefig("plots/plot_2_1.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_1.png")
 
@@ -220,7 +222,8 @@ def plot2_2():
     ax.set_xlim([-4.5, 5.5])
     ax.set_ylim([-6, 9])
     ax.margins(x=0.05, y=0.05)
-    sns.despine(ax=ax)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
 
     fig.savefig("plots/plot_2_2.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_2.png")
@@ -377,7 +380,8 @@ def plot2_3():
     ax.set_xlim([0, 6])
     ax.set_ylim([-1.5, 1.5])
     ax.margins(x=0.05, y=0.05)
-    sns.despine(ax=ax)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
 
     fig.savefig("plots/plot_2_3.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_3.png")
