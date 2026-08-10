@@ -12,15 +12,22 @@ def poly_derivative(coeffs: np.ndarray) -> np.ndarray:
 
 
 def poly_eval(coeffs: np.ndarray, t: np.ndarray | float) -> np.ndarray | float:
-    is_float = isinstance(t, float)
     t = np.asarray(t)
+
+    if t.ndim == 0:
+        output = coeffs[..., 0]
+        for i in range(1, coeffs.shape[-1]):
+            output = output * t + coeffs[..., i]
+
+        if coeffs.ndim == 1:
+            return float(output)
+
+        return output
 
     output = coeffs[..., 0, None]
     for i in range(1, coeffs.shape[-1]):
         output = output * t + coeffs[..., i, None]
 
-    if is_float:
-        output = float(output.squeeze())
     return output
 
 
@@ -29,7 +36,7 @@ type PolyCoeffs = np.ndarray[tuple[int], np.dtype[np.float64]]
 
 def poly_cauchy_bound(coeffs: PolyCoeffs) -> float:
     degree = coeffs.shape[0] - 1
-    if degree <= 1:
+    if degree < 1:
         return 0.0
 
     if np.isclose(coeffs[0], 0.0):
@@ -83,19 +90,25 @@ def poly_newton_bisect(
     return t
 
 
-def poly_real_roots(coeffs: PolyCoeffs) -> list[float]:
+def poly_real_roots(coeffs: PolyCoeffs, t_min: float, t_max: float) -> list[float]:
     while np.isclose(coeffs[0], 0.0):
         coeffs = coeffs[1:]
 
     degree = coeffs.shape[0] - 1
 
+    roots = []
+
     if degree <= 0:
-        return []
+        return roots
 
     elif degree == 1:
         a, b = coeffs
 
-        return [-b / a]
+        r = -b / a
+        if r >= t_min and r <= t_max:
+            roots.append(r)
+
+        return roots
 
     elif degree == 2:
         a, b, c = coeffs
@@ -107,46 +120,71 @@ def poly_real_roots(coeffs: PolyCoeffs) -> list[float]:
             x2 = -c / a
 
             if x2 < 0:
-                return []
+                return roots
 
-            r = np.sqrt(x2)
-            return [-r, r]
+            r1 = np.sqrt(x2)
+            r2 = -r1
+            if r2 >= t_min and r2 <= t_max:
+                roots.append(r2)
+            if r1 >= t_min and r1 <= t_max:
+                roots.append(r1)
+            return roots
 
         elif not np.isclose(b, 0.0) and np.isclose(c, 0.0):
-            r = -b / a
-            return sorted([0.0, r])
+            r1 = -b / a
+            r2 = 0.0
+            if r2 >= t_min and r2 <= t_max:
+                roots.append(r2)
+            if r1 >= t_min and r1 <= t_max:
+                roots.append(r1)
+            return roots
 
         D = b * b - 4.0 * a * c
         if D < 0.0:
-            return []
+            return roots
 
         elif np.isclose(D, 0.0):
-            return [-b / (2.0 * a)]
+            r = -b / (2.0 * a)
+            if r >= t_min and r <= t_max:
+                roots.append(r)
+            return roots
 
         else:
             q = -0.5 * (b + np.copysign(np.sqrt(D), b))
 
             r1 = q / a
-            if np.isclose(q, 0.0):
-                return [r1]
 
-            r2 = c / q
-            return sorted([r2, r1])
+            if r1 >= t_min and r1 <= t_max:
+                roots.append(r1)
+
+            if not np.isclose(q, 0.0):
+                r2 = c / q
+                if r2 >= t_min and r2 <= t_max:
+                    roots.append(r2)
+
+            return sorted(roots)
 
     else:
         roots = []
 
+        f_min = poly_eval(coeffs, t_min)
+        f_max = poly_eval(coeffs, t_max)
+
+        if np.isclose(f_min, 0.0):
+            roots.append(t_min)
+
+        if np.isclose(f_max, 0.0):
+            roots.append(t_max)
+
         d_coeffs = poly_derivative(coeffs)
-        d_roots = poly_real_roots(d_coeffs)
+        d_roots = poly_real_roots(d_coeffs, t_min, t_max)
 
         for r in d_roots:
             f = poly_eval(coeffs, r)
             if np.isclose(f, 0.0):
                 roots.append(r)
 
-        alpha = poly_cauchy_bound(coeffs)
-
-        search_points = sorted([-alpha] + d_roots + [alpha])
+        search_points = sorted([t_min] + d_roots + [t_max])
         for i in range(len(search_points) - 1):
             r0 = search_points[i + 0]
             r1 = search_points[i + 1]
@@ -160,19 +198,19 @@ def poly_real_roots(coeffs: PolyCoeffs) -> list[float]:
 
         roots.sort()
 
-        unique = []
+        roots_unique = []
         for r in roots:
-            if len(unique) == 0 or not np.isclose(r, unique[-1]):
-                unique.append(r)
+            if len(roots_unique) == 0 or not np.isclose(r, roots_unique[-1]):
+                roots_unique.append(r)
 
-        return unique
+        return roots_unique
 
 
 class Polynomial:
     def __init__(self, coeffs: np.ndarray):
         self.coeffs = coeffs
 
-        while self.coeffs.shape[0] > 0 and np.isclose(self.coeffs[0], 0.0):
+        while self.coeffs.shape[0] >= 2 and np.isclose(self.coeffs[0], 0.0):
             self.coeffs = self.coeffs[1:]
 
         self.degree = np.max(self.coeffs.shape[0] - 1, 0)
@@ -183,8 +221,13 @@ class Polynomial:
     def derivative(self) -> Polynomial:
         return Polynomial(poly_derivative(self.coeffs))
 
-    def get_real_roots(self) -> list[float]:
-        return poly_real_roots(self.coeffs)
+    def get_real_roots(self, t_min: float = -np.inf, t_max: float = np.inf) -> list[float]:
+        alpha = poly_cauchy_bound(self.coeffs)
+        if t_min == -np.inf:
+            t_min = -alpha
+        if t_max == np.inf:
+            t_max = alpha
+        return poly_real_roots(self.coeffs, t_min, t_max)
 
     def __call__(self, t: np.ndarray | float) -> np.ndarray | float:
         return self.eval(t)
@@ -194,9 +237,9 @@ class Polynomial:
         coeffs_other = other.coeffs
 
         if self.degree > other.degree:
-            coeffs_other = np.concatenate([np.zeros((self.degree - other.degree,)), coeffs_other], axis=0)
+            coeffs_other = np.pad(coeffs_other, (self.degree - other.degree, 0))
         elif self.degree < other.degree:
-            coeffs_self = np.concatenate([np.zeros((other.degree - self.degree,)), coeffs_self], axis=0)
+            coeffs_self = np.pad(coeffs_self, (other.degree - self.degree, 0))
 
         coeffs_added = coeffs_self + coeffs_other
         return Polynomial(coeffs_added)
@@ -208,11 +251,5 @@ class Polynomial:
         return self + (-other)
 
     def __mul__(self, other: Polynomial) -> Polynomial:
-        # degree_multiplied = self.degree + other.degree
-        # coeffs_multiplied = np.zeros((degree_multiplied,))
-        # for i in range(self.degree):
-        #     for j in range(other.degree):
-        #         pass
-
-        coeffs_multiplied = np.convolve(self.coeffs, other.coeffs) # TODO ?
+        coeffs_multiplied = np.convolve(self.coeffs, other.coeffs)
         return Polynomial(coeffs_multiplied)

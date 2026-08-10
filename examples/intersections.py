@@ -1,6 +1,6 @@
 import numpy as np
 
-from spline_intersections import State, Trajectory, poly_eval
+from spline_intersections import State, Trajectory, poly_eval, Polynomial
 
 
 def trajectory1_symbolic(t: float) -> tuple[np.ndarray, np.ndarray]:
@@ -71,9 +71,12 @@ def main():
     trajectory2.add_state(s5)
     trajectory2.add_state(s6)
 
-    t_intersections = trajectory1.intersect(trajectory2)
-    print(t_intersections)
-
+    t_intersections = trajectory1.intersect(trajectory2, 1.0)
+    for t in t_intersections:
+        f1 = trajectory1(t)
+        f2 = trajectory2(t)
+        dist = np.linalg.norm(f1 - f2)
+        print(f"t={t:.2f} => ||f_1(t) - f_2(t)||^2 = {dist}")
 
 if __name__ == "__main__":
     main()
