@@ -11,7 +11,7 @@ def poly_derivative(coeffs: np.ndarray) -> np.ndarray:
     return coeffs[..., :-1] * powers
 
 
-def poly_eval(coeffs: np.ndarray, t: np.ndarray | float) -> np.ndarray | float:
+def poly_eval(coeffs: np.ndarray, t: float | np.ndarray) -> float | np.ndarray:
     t = np.asarray(t)
 
     if t.ndim == 0:
@@ -90,8 +90,8 @@ def poly_newton_bisect(
     return t
 
 
-def poly_real_roots(coeffs: PolyCoeffs, t_min: float, t_max: float) -> list[float]:
-    while np.isclose(coeffs[0], 0.0):
+def poly_real_roots(coeffs: PolyCoeffs, t_min: float = -np.inf, t_max: float = np.inf) -> list[float]:
+    while coeffs.shape[0] > 0 and np.isclose(coeffs[0], 0.0):
         coeffs = coeffs[1:]
 
     degree = coeffs.shape[0] - 1
@@ -101,7 +101,13 @@ def poly_real_roots(coeffs: PolyCoeffs, t_min: float, t_max: float) -> list[floa
     if degree <= 0:
         return roots
 
-    elif degree == 1:
+    a = poly_cauchy_bound(coeffs)
+    if t_min == -np.inf:
+        t_min = -a
+    if t_max == np.inf:
+        t_max = a
+
+    if degree == 1:
         a, b = coeffs
 
         r = -b / a
@@ -114,7 +120,10 @@ def poly_real_roots(coeffs: PolyCoeffs, t_min: float, t_max: float) -> list[floa
         a, b, c = coeffs
 
         if np.isclose(b, 0.0) and np.isclose(c, 0.0):
-            return [0.0]
+            r = 0.0
+            if r >= t_min and r <= t_max:
+                roots.append(r)
+            return roots
 
         elif np.isclose(b, 0.0) and not np.isclose(c, 0.0):
             x2 = -c / a

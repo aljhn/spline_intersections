@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from spline_intersections import spline_get, poly_eval
+from spline_intersections import spline_get_cubic, poly_eval
 
 
 def setup_style():
@@ -101,15 +101,15 @@ def plot1_2():
     p3 = np.array([10.0, 2.0])
     v3 = np.array([-1.0, 1.0]) * mult
 
-    spline0 = spline_get(t0, p0, v0, t1, p1, v1)
+    spline0 = spline_get_cubic(t0, p0, v0, t1, p1, v1)
     tspan0 = np.linspace(t0, t1, 100)
     x0 = poly_eval(spline0, tspan0)
 
-    spline1 = spline_get(t1, p1, v1, t2, p2, v2)
+    spline1 = spline_get_cubic(t1, p1, v1, t2, p2, v2)
     tspan1 = np.linspace(t1, t2, 100)
     x1 = poly_eval(spline1, tspan1)
 
-    spline2 = spline_get(t2, p2, v2, t3, p3, v3)
+    spline2 = spline_get_cubic(t2, p2, v2, t3, p3, v3)
     tspan2 = np.linspace(t2, t3, 100)
     x2 = poly_eval(spline2, tspan2)
 
@@ -236,7 +236,7 @@ def plot2_3():
     h1 = -0.5
 
     def draw_spline(p0, v0, p1, v1, color):
-        spline = spline_get(0.0, p0, v0, 1.0, p1, v1)
+        spline = spline_get_cubic(0.0, p0, v0, 1.0, p1, v1)
         t = np.linspace(0.0, 1.0, 100)
         f = poly_eval(spline, t)
         ax.plot(f[0, :], f[1, :], color=color, linewidth=3)
@@ -396,18 +396,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # mult = 10.0
-    #
-    # t0 = 0.0
-    # p0 = np.array([0.0, 0.0])
-    # v0 = np.array([-1.0, 1.0]) * mult
-    #
-    # t1 = 1.0
-    # p1 = np.array([4.0, 4.0])
-    # v1 = np.array([-1.0, -1.0]) * mult
-    #
-    # spline0 = spline_get(t0, p0, v0, t1, p1, v1)
-    # tspan0 = np.linspace(t0, t1, 100)
-    # x0 = poly_eval(spline0, tspan0)
-
     main()

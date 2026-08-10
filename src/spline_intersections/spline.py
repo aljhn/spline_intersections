@@ -22,6 +22,9 @@ def spline_get_cubic(
     p1: np.ndarray[tuple[int], np.dtype[np.float64]],
     v1: np.ndarray[tuple[int], np.dtype[np.float64]],
 ) -> SplineCoeffs:
+    if np.isclose(t0, t1):
+        return np.zeros((3, 4))
+
     t0_2 = t0 * t0
     t0_3 = t0_2 * t0
 
