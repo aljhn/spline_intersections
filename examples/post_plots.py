@@ -80,6 +80,7 @@ def plot1_1():
 
     fig.savefig("plots/plot_1_1.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_1_1.png")
+    plt.close(fig)
 
 
 def plot1_2():
@@ -165,6 +166,7 @@ def plot1_2():
 
     fig.savefig("plots/plot_1_2.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_1_2.png")
+    plt.close(fig)
 
 
 def plot2_1():
@@ -190,6 +192,7 @@ def plot2_1():
     ax.spines["right"].set_visible(False)
     fig.savefig("plots/plot_2_1.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_1.png")
+    plt.close(fig)
 
 
 def plot2_2():
@@ -227,6 +230,7 @@ def plot2_2():
 
     fig.savefig("plots/plot_2_2.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_2.png")
+    plt.close(fig)
 
 
 def plot2_3():
@@ -385,6 +389,7 @@ def plot2_3():
 
     fig.savefig("plots/plot_2_3.png", dpi=300, bbox_inches="tight")
     print("Finished: plots/plot_2_3.png")
+    plt.close(fig)
 
 
 def main():
