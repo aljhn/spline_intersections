@@ -14,13 +14,11 @@ def hsl(h, s, l):
 
 def setup_style(dark=False):
     if dark:
-        foreground = hsl(200, 20, 5)
-        axes_background = hsl(200, 20, 15)
+        background = hsl(200, 20, 5)
         text = hsl(40, 10, 90)
         secondary = hsl(40, 10, 50)
     else:
-        foreground = hsl(200, 20, 95)
-        axes_background = hsl(200, 20, 85)
+        background = hsl(200, 20, 95)
         text = hsl(40, 10, 10)
         secondary = hsl(40, 10, 50)
 
@@ -42,14 +40,14 @@ def setup_style(dark=False):
             "figure.dpi": 150,
             "savefig.dpi": 300,
             "savefig.bbox": "tight",
-            "figure.facecolor": axes_background,
-            "axes.facecolor": axes_background,
+            "figure.facecolor": background,
+            "axes.facecolor": background,
             "axes.edgecolor": text,
             "axes.labelcolor": text,
             "text.color": text,
             "xtick.color": text,
             "ytick.color": text,
-            "legend.facecolor": foreground,
+            "legend.facecolor": background,
             "legend.edgecolor": text,
             "legend.labelcolor": text,
         }
