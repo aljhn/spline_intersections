@@ -1,4 +1,5 @@
 import os
+import colorsys
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,37 +7,63 @@ import matplotlib.pyplot as plt
 from spline_intersections import spline_get_cubic, poly_eval
 
 
-def setup_style():
+def hsl(h, s, l):
+    r, g, b = colorsys.hls_to_rgb(h / 360, l / 100, s / 100)
+    return r, g, b
+
+
+def setup_style(dark=False):
+    if dark:
+        foreground = hsl(200, 20, 5)
+        axes_background = hsl(200, 20, 15)
+        text = hsl(40, 10, 90)
+        secondary = hsl(40, 10, 50)
+    else:
+        foreground = hsl(200, 20, 95)
+        axes_background = hsl(200, 20, 85)
+        text = hsl(40, 10, 10)
+        secondary = hsl(40, 10, 50)
+
     plt.rcParams.update(
         {
             "font.family": "serif",
             "font.serif": ["STIX Two Text"],
             "mathtext.fontset": "stix",
             "font.size": 16,
-            "axes.grid": True,
-            "grid.color": "0.8",
-            "grid.linewidth": 0.8,
             "axes.titlesize": 18,
             "axes.labelsize": 16,
-            "axes.linewidth": 1.2,
             "xtick.labelsize": 12,
             "ytick.labelsize": 12,
             "legend.fontsize": 14,
-            "figure.dpi": 300,
+            "axes.grid": True,
+            "axes.linewidth": 1.2,
+            "grid.linewidth": 0.8,
+            "grid.color": secondary,
+            "figure.dpi": 150,
             "savefig.dpi": 300,
             "savefig.bbox": "tight",
+            "figure.facecolor": axes_background,
+            "axes.facecolor": axes_background,
+            "axes.edgecolor": text,
+            "axes.labelcolor": text,
+            "text.color": text,
+            "xtick.color": text,
+            "ytick.color": text,
+            "legend.facecolor": foreground,
+            "legend.edgecolor": text,
+            "legend.labelcolor": text,
         }
     )
 
 
 def setup_figure():
-    setup_style()
-
     fig, ax = plt.subplots(figsize=(8, 5), constrained_layout=True)
     return fig, ax
 
 
-def plot1_1():
+def plot1_1(dark):
+    setup_style(dark)
+
     # f = lambda t: -0.05 * t * t + 0.5 * t - 5.0 * np.exp(-0.5 * t) + 5.0
     # df = lambda t: -0.1 * t + 0.5 + 2.5 * np.exp(-0.5 * t)
     # t = np.array([0.0, 2.0, 4.5, 10.0, 14.5])
@@ -55,8 +82,11 @@ def plot1_1():
 
     fig, ax = setup_figure()
 
+    edgecolor = "white"
+    linecolor = "black"
+
     ax.plot(t_dense, p_dense, color="C0", linewidth=2, zorder=1)
-    ax.scatter(t, p, s=150, color="C0", edgecolor="white", linewidth=1.5, zorder=3)
+    ax.scatter(t, p, s=150, color="C0", edgecolor=edgecolor, linewidth=1.5, zorder=3)
     ax.quiver(
         t,
         p,
@@ -69,7 +99,9 @@ def plot1_1():
         headwidth=4.0,
         headlength=4.0,
         headaxislength=4.0,
-        color="black",
+        color=linecolor,
+        edgecolor=edgecolor,
+        linewidth=1.5,
         zorder=2,
     )
     ax.set_xlabel(r"$t$")
@@ -78,12 +110,18 @@ def plot1_1():
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    fig.savefig("plots/plot_1_1.png", dpi=300, bbox_inches="tight")
-    print("Finished: plots/plot_1_1.png")
+    if dark:
+        fig.savefig("plots/plot_1_1_dark.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_1_1_dark.png")
+    else:
+        fig.savefig("plots/plot_1_1.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_1_1.png")
     plt.close(fig)
 
 
-def plot1_2():
+def plot1_2(dark):
+    setup_style(dark)
+
     mult = 10.0
 
     t0 = 0.0
@@ -116,12 +154,15 @@ def plot1_2():
 
     fig, ax = setup_figure()
 
+    pointcolor = "black"
+    edgecolor = "white"
+
     ax.scatter(
         [p0[0], p1[0], p2[0], p3[0]],
         [p0[1], p1[1], p2[1], p3[1]],
         s=150,
-        color="black",
-        edgecolor="white",
+        color=pointcolor,
+        edgecolor=edgecolor,
         linewidth=1.5,
         zorder=2,
     )
@@ -146,7 +187,9 @@ def plot1_2():
             v[1] * arrow_scale,
             angles="xy",
             scale_units="xy",
-            color="black",
+            color=pointcolor,
+            edgecolor=edgecolor,
+            linewidth=1.5,
             scale=1,
             width=0.005,
             headwidth=4.0,
@@ -164,13 +207,17 @@ def plot1_2():
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    fig.savefig("plots/plot_1_2.png", dpi=300, bbox_inches="tight")
-    print("Finished: plots/plot_1_2.png")
+    if dark:
+        fig.savefig("plots/plot_1_2_dark.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_1_2_dark.png")
+    else:
+        fig.savefig("plots/plot_1_2.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_1_2.png")
     plt.close(fig)
 
 
-def plot2_1():
-    setup_style()
+def plot2_1(dark):
+    setup_style(dark)
 
     fig, ax = plt.subplots(
         figsize=(8, 5), constrained_layout=True, subplot_kw={"projection": "3d"}
@@ -190,12 +237,21 @@ def plot2_1():
     ax.margins(0.05)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    fig.savefig("plots/plot_2_1.png", dpi=300, bbox_inches="tight")
-    print("Finished: plots/plot_2_1.png")
+    if dark:
+        ax.xaxis.pane.set_facecolor("#0A0E0F")
+        ax.yaxis.pane.set_facecolor("#0A0E0F")
+        ax.zaxis.pane.set_facecolor("#0A0E0F")
+        fig.savefig("plots/plot_2_1_dark.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_2_1_dark.png")
+    else:
+        fig.savefig("plots/plot_2_1.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_2_1.png")
     plt.close(fig)
 
 
-def plot2_2():
+def plot2_2(dark):
+    setup_style(dark)
+
     fig, ax = setup_figure()
 
     t = np.linspace(-4.0, 5.0, 200)
@@ -206,16 +262,19 @@ def plot2_2():
     f = 0.1 * t5 - 0.3 * t4 - 1.1 * t3 + 2.7 * t2 + t - 2.4
     # f = 0.1 * (t + 1.0) * (t - 1.0) * (t - 2.0) * (t + 3.0) * (t - 4.0)
 
+    linecolor = "white" if dark else "black"
+    edgecolor = "white"
+
     ax.plot(t, f, color="C0", linewidth=3)
-    ax.plot((-10.0, 10.0), (0.0, 0.0), color="black", linewidth=1)
-    ax.plot((0.0, 0.0), (-10.0, 10.0), color="black", linewidth=1)
+    ax.plot((-10.0, 10.0), (0.0, 0.0), color=linecolor, linewidth=1)
+    ax.plot((0.0, 0.0), (-10.0, 10.0), color=linecolor, linewidth=1)
 
     ax.scatter(
         (-1, 1, 2, -3, 4),
         (0, 0, 0, 0, 0),
         s=100,
         color="C0",
-        edgecolor="white",
+        edgecolor=edgecolor,
         linewidth=1.5,
         zorder=3,
     )
@@ -228,12 +287,18 @@ def plot2_2():
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    fig.savefig("plots/plot_2_2.png", dpi=300, bbox_inches="tight")
-    print("Finished: plots/plot_2_2.png")
+    if dark:
+        fig.savefig("plots/plot_2_2_dark.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_2_2_dark.png")
+    else:
+        fig.savefig("plots/plot_2_2.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_2_2.png")
     plt.close(fig)
 
 
-def plot2_3():
+def plot2_3(dark):
+    setup_style(dark)
+
     fig, ax = setup_figure()
 
     t0 = np.array([1.0, 2.5, 3.0, 5.0])
@@ -285,12 +350,15 @@ def plot2_3():
         "C1",
     )
 
+    linecolor = "white" if dark else "black"
+    edgecolor = "white"
+
     ax.scatter(
         t0,
         np.ones_like(t0) * h0,
         s=150,
         color="C0",
-        edgecolor="white",
+        edgecolor=edgecolor,
         linewidth=1.5,
         zorder=3,
     )
@@ -300,45 +368,45 @@ def plot2_3():
         np.ones_like(t1) * h1,
         s=150,
         color="C1",
-        edgecolor="white",
+        edgecolor=edgecolor,
         linewidth=1.5,
         zorder=3,
     )
 
-    ax.plot((t0[0], t0[0]), (h0 + 0.5, h0 - 0.5), color="black", linewidth=2)
-    ax.plot((t0[1], t0[1]), (h0 + 0.5, h0 - 0.5), color="black", linewidth=2)
-    ax.plot((t0[2], t0[2]), (h0 + 0.5, h0 - 0.5), color="black", linewidth=2)
-    ax.plot((t0[3], t0[3]), (h0 + 0.5, h0 - 0.5), color="black", linewidth=2)
+    ax.plot((t0[0], t0[0]), (h0 + 0.5, h0 - 0.5), color=linecolor, linewidth=2)
+    ax.plot((t0[1], t0[1]), (h0 + 0.5, h0 - 0.5), color=linecolor, linewidth=2)
+    ax.plot((t0[2], t0[2]), (h0 + 0.5, h0 - 0.5), color=linecolor, linewidth=2)
+    ax.plot((t0[3], t0[3]), (h0 + 0.5, h0 - 0.5), color=linecolor, linewidth=2)
 
-    ax.plot((t1[0], t1[0]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2)
-    ax.plot((t1[1], t1[1]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2)
-    ax.plot((t1[2], t1[2]), (h1 + 0.5, h1 - 0.5), color="black", linewidth=2)
+    ax.plot((t1[0], t1[0]), (h1 + 0.5, h1 - 0.5), color=linecolor, linewidth=2)
+    ax.plot((t1[1], t1[1]), (h1 + 0.5, h1 - 0.5), color=linecolor, linewidth=2)
+    ax.plot((t1[2], t1[2]), (h1 + 0.5, h1 - 0.5), color=linecolor, linewidth=2)
 
     ax.plot(
         (t0[0], t0[0]),
         (h1 + 0.5, h1 - 0.5),
-        color="black",
+        color=linecolor,
         linewidth=2,
         linestyle="dashed",
     )
     ax.plot(
         (t0[1], t0[1]),
         (h1 + 0.5, h1 - 0.5),
-        color="black",
+        color=linecolor,
         linewidth=2,
         linestyle="dashed",
     )
     ax.plot(
         (t0[2], t0[2]),
         (h1 + 0.5, h1 - 0.5),
-        color="black",
+        color=linecolor,
         linewidth=2,
         linestyle="dashed",
     )
     ax.plot(
         (t0[3], t0[3]),
         (h1 + 0.5, h1 - 0.5),
-        color="black",
+        color=linecolor,
         linewidth=2,
         linestyle="dashed",
     )
@@ -346,21 +414,21 @@ def plot2_3():
     ax.plot(
         (t1[0], t1[0]),
         (h0 + 0.5, h0 - 0.5),
-        color="black",
+        color=linecolor,
         linewidth=2,
         linestyle="dashed",
     )
     ax.plot(
         (t1[1], t1[1]),
         (h0 + 0.5, h0 - 0.5),
-        color="black",
+        color=linecolor,
         linewidth=2,
         linestyle="dashed",
     )
     ax.plot(
         (t1[2], t1[2]),
         (h0 + 0.5, h0 - 0.5),
-        color="black",
+        color=linecolor,
         linewidth=2,
         linestyle="dashed",
     )
@@ -379,7 +447,7 @@ def plot2_3():
             c = "C1"
         ax.fill(x, y, color=c, alpha=0.2)
 
-    ax.plot((-100, 100), (0, 0), color="black", linewidth=1)
+    ax.plot((-100, 100), (0, 0), color=linecolor, linewidth=1)
 
     ax.set_xlim([0, 6])
     ax.set_ylim([-1.5, 1.5])
@@ -387,21 +455,30 @@ def plot2_3():
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    fig.savefig("plots/plot_2_3.png", dpi=300, bbox_inches="tight")
-    print("Finished: plots/plot_2_3.png")
+    if dark:
+        fig.savefig("plots/plot_2_3_dark.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_2_3_dark.png")
+    else:
+        fig.savefig("plots/plot_2_3.png", dpi=300, bbox_inches="tight")
+        print("Finished: plots/plot_2_3.png")
     plt.close(fig)
+
+
+def plot_all(dark=False):
+    plot1_1(dark)
+    plot1_2(dark)
+
+    plot2_1(dark)
+    plot2_2(dark)
+    plot2_3(dark)
 
 
 def main():
     if not os.path.exists("plots"):
         os.mkdir("plots")
 
-    plot1_1()
-    plot1_2()
-
-    plot2_1()
-    plot2_2()
-    plot2_3()
+    plot_all(dark=False)
+    plot_all(dark=True)
 
 
 if __name__ == "__main__":
